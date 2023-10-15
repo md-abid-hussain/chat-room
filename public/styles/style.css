@@ -18,7 +18,7 @@ h1{
     text-align: center;
     padding:0.5rem;
     color: white;
-    background-color: rgb(144, 144, 144);
+    background-color: rgb(105, 105, 105);
 }
 
 body{
@@ -27,6 +27,15 @@ body{
 }
 
 form{
+    display: flex;
+    height: 3.75rem;
+    padding:0.5rem 0.45rem;
+    background-color:rgb(144, 144, 144);
+    backdrop-filter: blur(10px);
+    gap: 0.25rem;
+}
+
+.form-message{
     margin-top: 1rem;
     position: fixed; 
     bottom: 0; 
