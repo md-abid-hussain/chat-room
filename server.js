@@ -8,10 +8,45 @@ const app = express()
 
 const httpServer = createServer(app)
 
-const socketServer = new Server(httpServer,{
+const socketIO = new Server(httpServer,{
     cors:{
-        origin:process.env.NODE == 'production' ? false : ['http://localhost:5500','http://127.0.0.1:5500','https://good-lemur-causal.ngrok-free.app','https://good-lemur-causal.ngrok-free.app/app/']
+        origin:process.env.NODE_ENV === 'production' ? false : ['http://localhost:5500','http://127.0.0.1:5500','https://good-lemur-causal.ngrok-free.app','https://good-lemur-causal.ngrok-free.app/app/']
     }
 })
 
 app.use(express.static('public'))
+
+app.get('/',(req,res)=>{
+    res.sendFile(path.join(__dirname,'public','index.html'))
+})
+
+socketIO.on('connection',(socket)=>{
+    console.log(`User ${socket.id} connected`)
+
+    // Upon connection - only user
+
+    socket.emit('message',"Welcome to chat app")
+
+    // Upon connection - to all user
+    socket.broadcast.emit('message',`User ${socket.id.substring(0,5)} connected`)
+
+    // Listening for message event
+    socket.on('message',(data)=>{
+        socketIO.emit('chat message',data)
+    })
+
+    // When user disconnect
+    socket.on('disconnect',()=>{
+        console.log('disconnected')
+        socket.broadcast.emit('message',`User ${socket.id.substring(0,5)} disconnected`)
+    })
+
+    // Listen for an activity
+    socket.on('activity',(name)=>{
+        socket.broadcast.emit('activity',name)
+    })
+})
+
+httpServer.listen(PORT,()=>{
+    console.log(`server is running on http://localhost:${PORT}`)
+})
